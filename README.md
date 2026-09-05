@@ -6,11 +6,17 @@ An open-source, portable Corporate Finance development suite for Julia.
 
 ## 🚀 Installation
 
-Once registered, install it via the Julia REPL:
+Once registered in the General Registry, you can install it directly from the Julia REPL by entering the package manager mode (pressing `]`):
+
+```julia
+pkg> add CorporateFinance
+```
+
+Alternatively, during development or before official registration is completed, you can install it portably directly from the GitHub repository URL:
 
 ```julia
 using Pkg
-Pkg.add("CorporateFinance")
+Pkg.add(url="https://github.com")
 ```
 
 ## 💻 Basic Usage
@@ -18,6 +24,6 @@ Pkg.add("CorporateFinance")
 ```julia
 using CorporateFinance
 
-# Initialize the module
+# Example: Run standard corporate calculations
 CorporateFinance.calculate_npv()
 ```
