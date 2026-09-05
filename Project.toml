@@ -2,3 +2,7 @@ name = "CorporateFinance"
 uuid = "a609d57a-7bd8-4720-b3b3-85eec54e17ef"
 authors = ["Miguel Ferrera"]
 version = "0.1.0"
+
+[compat]
+julia = "1.10"
+
