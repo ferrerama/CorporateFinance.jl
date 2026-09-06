@@ -1,22 +1,13 @@
 module CorporateFinance
 
-export capm, wacc, dcf_value
+using LinearAlgebra, Statistics
+
+export capm, wacc, dcf_value, beta_regression,
+       npv, irr, payback, perpetuity
 
 # -----------------------------
 # CAPM: Cost of Equity
 # -----------------------------
-"""
-    capm(; rf, beta, erp, crp)
-
-Calculates the Cost of Equity using the adjusted CAPM model:
-ke = rf + beta * erp + crp
-
-Parameters:
-- rf   : Risk-free rate
-- beta : Systematic risk (levered beta)
-- erp  : Equity Risk Premium
-- crp  : Country Risk Premium
-"""
 function capm(; rf::Real, beta::Real, erp::Real, crp::Real)
     if rf < 0
         error("rf (risk-free rate) cannot be negative.")
@@ -37,16 +28,6 @@ end
 # -----------------------------
 # WACC: Weighted Average Cost of Capital
 # -----------------------------
-"""
-    wacc(; ke, kd, tax, E, D)
-
-Calculates the WACC based on:
-- ke  : Cost of Equity (from CAPM)
-- kd  : Cost of Debt
-- tax : Corporate Tax Rate (0–1)
-- E   : Market Value of Equity
-- D   : Market Value of Debt
-"""
 function wacc(; ke::Real, kd::Real, tax::Real, E::Real, D::Real)
     if tax < 0 || tax > 1
         error("Tax rate must be between 0 and 1.")
@@ -64,12 +45,6 @@ end
 # -----------------------------
 # DCF: Discounted Cash Flow
 # -----------------------------
-"""
-    dcf_value(fcf::Vector{T}, wacc::Real) where T<:Real
-
-Takes a vector of Free Cash Flows (FCF) and discounts them using a specific WACC.
-Returns the total Present Value using high-performance broadcasting operators.
-"""
 function dcf_value(fcf::Vector{T}, wacc::Real) where T<:Real
     if any(.!isfinite.(fcf))
         error("The cash flow vector contains invalid or non-finite values.")
@@ -80,6 +55,68 @@ function dcf_value(fcf::Vector{T}, wacc::Real) where T<:Real
 
     t = 1:length(fcf)
     return sum(fcf ./ (1 .+ wacc) .^ t)
+end
+
+# -----------------------------
+# Beta Regression
+# -----------------------------
+"""
+    beta_regression(asset_returns, market_returns)
+
+Calculates the beta of an asset relative to the market using covariance and variance.
+"""
+function beta_regression(asset_returns::Vector{<:Real}, market_returns::Vector{<:Real})
+    if length(asset_returns) != length(market_returns)
+        error("Series must have the same length.")
+    end
+    cov_am = cov(asset_returns, market_returns)
+    var_m  = var(market_returns)
+    return cov_am / var_m
+end
+
+# -----------------------------
+# NPV: Net Present Value
+# -----------------------------
+function npv(cashflows::Vector{<:Real}, rate::Real; initial_investment::Real=0.0)
+    t = 1:length(cashflows)
+    return -initial_investment + sum(cashflows ./ (1 .+ rate) .^ t)
+end
+
+# -----------------------------
+# IRR: Internal Rate of Return
+# -----------------------------
+function irr(cashflows::Vector{<:Real}; initial_investment::Real=0.0)
+    f(rate) = npv(cashflows, rate; initial_investment=initial_investment)
+    # Simple Newton-Raphson iteration
+    rate = 0.1
+    for _ in 1:100
+        f_val = f(rate)
+        f_der = sum(-t * cashflows[t] / (1 + rate)^(t+1) for t in 1:length(cashflows))
+        rate -= f_val / f_der
+        if abs(f_val) < 1e-6
+            return rate
+        end
+    end
+    error("IRR did not converge")
+end
+
+# -----------------------------
+# Payback Period
+# -----------------------------
+function payback(cashflows::Vector{<:Real}, initial_investment::Real)
+    cumulative = cumsum(cashflows)
+    idx = findfirst(>=(initial_investment), cumulative)
+    return isnothing(idx) ? Inf : idx
+end
+
+# -----------------------------
+# Perpetuity
+# -----------------------------
+function perpetuity(cashflow::Real, rate::Real)
+    if rate <= 0
+        error("Discount rate must be positive.")
+    end
+    return cashflow / rate
 end
 
 end # module
