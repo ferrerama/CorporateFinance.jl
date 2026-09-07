@@ -1,0 +1,6 @@
+[deps]
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+CorporateFinance = "a609d57a-7bd8-4720-b3b3-85eec54e17ef"
+
+[compat]
+Test = "1"
