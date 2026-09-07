@@ -5,7 +5,7 @@
 
 using CorporateFinance
 
-println("🚀 Starting corporate finance ...")
+println("Starting corporate finance ...")
 
 # 1. CAPM: Cost of Equity
 risk_free_rate = 0.045   # 4.5% (rf)
