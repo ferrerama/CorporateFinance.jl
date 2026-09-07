@@ -7,11 +7,11 @@ An open-source, lightweight Corporate Finance toolkit for Julia — cost of capi
 
 ## Scope of CorporateFinance.jl
 
-`CorporateFinance.jl` provides straightforward implementations of the calculations most commonly used in corporate finance coursework and practice: estimating the cost of equity and capital, discounting cash flows, and evaluating investment projects. It favors clear, keyword-based function signatures and explicit input validation over cleverness, so results are easy to trace and functions fail loudly on nonsensical inputs (negative rates, mismatched vector lengths, zero capital, etc.).
+`CorporateFinance.jl` provides straightforward implementations of the calculations most commonly used in corporate finance coursework and practice: estimating the cost of equity and capital, discounting cash flows, and evaluating investment projects.
 
 This package does not attempt to model market microstructure, portfolio optimization, or derivatives pricing — for that, see packages like [FinanceModels.jl](https://github.com/JuliaActuary/FinanceModels.jl) or [InterestRates.jl](https://github.com/JuliaActuary/InterestRates.jl).
 
-## 🚀 Installation
+## Installation
 
 Once registered in the General registry, install it from the Julia REPL by entering package mode (press `]`):
 
@@ -26,7 +26,7 @@ using Pkg
 Pkg.add(url="https://github.com/ferrerama/CorporateFinance.jl")
 ```
 
-## 💻 Quick example
+## Quick example
 
 ```julia
 using CorporateFinance
@@ -43,7 +43,7 @@ value = dcf_value(fcf, w)
 
 # --- Appraise an investment: NPV, IRR, and payback period ---
 investment = 400_000
-cashflows  = [90_000, 110_000, 130_000, 150_000, 170_000]
+cashflows  = [90_000, 110_000, 125_000, 135_000, 160_000]
 
 npv_result      = npv(cashflows, w; initial_investment = investment)
 irr_result      = irr(cashflows; initial_investment = investment)
@@ -53,7 +53,7 @@ payback_result  = payback(cashflows, investment)
 pv = perpetuity(50_000, 0.08)
 ```
 
-## 📊 Supported functions
+## Supported functions
 
 | Function | Description |
 |---|---|
@@ -68,7 +68,7 @@ pv = perpetuity(50_000, 0.08)
 
 All functions validate their inputs and raise a descriptive error for invalid parameters (e.g. negative rates, mismatched vector lengths, or zero total capital), rather than silently returning `NaN` or `Inf`.
 
-## 🧪 Running the tests
+## Running the tests
 
 ```julia
 using Pkg
@@ -76,10 +76,10 @@ Pkg.activate(".")
 Pkg.test()
 ```
 
-## 🤝 Contributing
+## Contributing
 
 Issues and pull requests are welcome — whether it's a bug fix, a new valuation method, or an improvement to input validation. Please include a test for any new function in `test/runtests.jl`.
 
-## 📄 License
+## License
 
 CorporateFinance.jl is licensed under the [MIT License](LICENSE).
