@@ -91,7 +91,7 @@ function irr(cashflows::Vector{<:Real}; initial_investment::Real=0.0)
     rate = 0.1
     for _ in 1:100
         f_val = f(rate)
-        f_der = sum(-t * cashflows[t] / (1 + rate)^(t+1) for t in 1:length(cashflows))
+        f_der = sum((-t * cashflows[t]) / (1 + rate)^(t + 1) for t in 1:length(cashflows))
         rate -= f_val / f_der
         if abs(f_val) < 1e-6
             return rate
