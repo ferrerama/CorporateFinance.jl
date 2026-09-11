@@ -9,7 +9,7 @@ An open-source, lightweight Corporate Finance toolkit for Julia — cost of capi
 
 `CorporateFinance.jl` provides straightforward implementations of the calculations most commonly used in corporate finance coursework and practice: estimating the cost of equity and capital, discounting cash flows, and evaluating investment projects.
 
-This package does not attempt to model market microstructure, portfolio optimization, or derivatives pricing — for that, see packages like [FinanceModels.jl](https://github.com/JuliaActuary/FinanceModels.jl) or [InterestRates.jl](https://github.com/JuliaActuary/InterestRates.jl).
+This package does not attempt to model market microstructure, portfolio optimization, or derivatives pricing — for that, see packages like [FinanceModels.jl](https://github.com/JuliaActuary/FinanceModels.jl) or [InterestRates.jl](https://github.com/felipenoris/InterestRates.jl).
 
 ## Installation
 
@@ -52,21 +52,6 @@ payback_result  = payback(cashflows, investment)
 # --- Value a perpetual cash flow ---
 pv = perpetuity(50_000, 0.08)
 ```
-
-## Supported functions
-
-| Function | Description |
-|---|---|
-| `capm(; rf, beta, erp, crp)` | Cost of equity via the Capital Asset Pricing Model, with an added country risk premium. |
-| `wacc(; ke, kd, tax, E, D)` | Weighted Average Cost of Capital from cost of equity, after-tax cost of debt, and capital structure. |
-| `dcf_value(fcf, wacc)` | Present value of a project or firm from a vector of free cash flows, discounted at `wacc`. |
-| `beta_regression(asset_returns, market_returns)` | Beta of an asset relative to the market, estimated as `Cov(asset, market) / Var(market)`. |
-| `npv(cashflows, rate; initial_investment=0.0)` | Net Present Value of a stream of cash flows at a given discount rate. |
-| `irr(cashflows; initial_investment=0.0)` | Internal Rate of Return, solved numerically via Newton–Raphson. |
-| `payback(cashflows, initial_investment)` | Number of periods needed for cumulative cash flows to recover the initial investment. |
-| `perpetuity(cashflow, rate)` | Present value of a constant, indefinitely repeating cash flow. |
-
-All functions validate their inputs and raise a descriptive error for invalid parameters (e.g. negative rates, mismatched vector lengths, or zero total capital), rather than silently returning `NaN` or `Inf`.
 
 ## Running the tests
 

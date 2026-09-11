@@ -8,6 +8,17 @@ export capm, wacc, dcf_value, beta_regression,
 # -----------------------------
 # CAPM: Cost of Equity
 # -----------------------------
+"""
+    capm(; rf::Real, beta::Real, erp::Real, crp::Real)
+
+Calculates the Cost of Equity using the Capital Asset Pricing Model (CAPM).
+
+# Keyword Arguments
+- `rf`: Risk-free rate. Cannot be negative.
+- `beta`: Systematic risk measure. Must be between -5 and 5.
+- `erp`: Equity Risk Premium. Must be positive.
+- `crp`: Country Risk Premium. Must be positive.
+"""
 function capm(; rf::Real, beta::Real, erp::Real, crp::Real)
     if rf < 0
         error("rf (risk-free rate) cannot be negative.")
@@ -28,6 +39,18 @@ end
 # -----------------------------
 # WACC: Weighted Average Cost of Capital
 # -----------------------------
+"""
+    wacc(; ke::Real, kd::Real, tax::Real, E::Real, D::Real)
+
+Calculates the Weighted Average Cost of Capital (WACC).
+
+# Keyword Arguments
+- `ke`: Cost of Equity.
+- `kd`: Cost of Debt.
+- `tax`: Corporate tax rate, between 0 and 1.
+- `E`: Market value of equity.
+- `D`: Market value of debt.
+"""
 function wacc(; ke::Real, kd::Real, tax::Real, E::Real, D::Real)
     if tax < 0 || tax > 1
         error("Tax rate must be between 0 and 1.")
@@ -45,6 +68,11 @@ end
 # -----------------------------
 # DCF: Discounted Cash Flow
 # -----------------------------
+"""
+    dcf_value(fcf::Vector{T}, wacc::Real) where T<:Real
+
+Calculates the present value of a series of Free Cash Flows (FCF) discounted at the WACC rate.
+"""
 function dcf_value(fcf::Vector{T}, wacc::Real) where T<:Real
     if any(.!isfinite.(fcf))
         error("The cash flow vector contains invalid or non-finite values.")
@@ -77,6 +105,11 @@ end
 # -----------------------------
 # NPV: Net Present Value
 # -----------------------------
+"""
+    npv(cashflows::Vector{<:Real}, rate::Real; initial_investment::Real=0.0)
+
+Calculates the Net Present Value (NPV) of an investment project.
+"""
 function npv(cashflows::Vector{<:Real}, rate::Real; initial_investment::Real=0.0)
     t = 1:length(cashflows)
     return -initial_investment + sum(cashflows ./ (1 .+ rate) .^ t)
@@ -85,6 +118,11 @@ end
 # -----------------------------
 # IRR: Internal Rate of Return
 # -----------------------------
+"""
+    irr(cashflows::Vector{<:Real}; initial_investment::Real=0.0)
+
+Calculates the Internal Rate of Return (IRR) using the Newton-Raphson numerical method.
+"""
 function irr(cashflows::Vector{<:Real}; initial_investment::Real=0.0)
     f(rate) = npv(cashflows, rate; initial_investment=initial_investment)
     # Simple Newton-Raphson iteration
@@ -103,6 +141,11 @@ end
 # -----------------------------
 # Payback Period
 # -----------------------------
+"""
+    payback(cashflows::Vector{<:Real}, initial_investment::Real)
+
+Calculates the simple payback period. Returns `Inf` if the initial investment is not fully recovered within the timeline.
+"""
 function payback(cashflows::Vector{<:Real}, initial_investment::Real)
     cumulative = cumsum(cashflows)
     idx = findfirst(>=(initial_investment), cumulative)
@@ -112,6 +155,11 @@ end
 # -----------------------------
 # Perpetuity
 # -----------------------------
+"""
+    perpetuity(cashflow::Real, rate::Real)
+
+Calculates the present value of a constant perpetuity given a cash flow and a discount rate.
+"""
 function perpetuity(cashflow::Real, rate::Real)
     if rate <= 0
         error("Discount rate must be positive.")
