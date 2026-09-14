@@ -19,7 +19,7 @@ Once registered in the General registry, install it from the Julia REPL by enter
 pkg> add CorporateFinance
 ```
 
-Alternatively, before registration completes (or to track the latest development version), install it directly from GitHub:
+Permanent alternatively , before registration completes (or to track the latest development version), install it directly from GitHub:
 
 ```julia
 using Pkg
