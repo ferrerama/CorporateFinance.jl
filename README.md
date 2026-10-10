@@ -7,7 +7,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Julia](https://img.shields.io/badge/Julia-1.10%2B-9558B2?logo=julia)](https://julialang.org)
 
-A small Julia package for corporate valuation: from the cost of capital to the equity value of a company.
+A Julia package for corporate valuation: from the cost of capital to the equity value of a company.
 
 ## Scope of CorporateFinance.jl
 

@@ -1,6 +1,6 @@
 # CorporateFinance.jl
 
-A small Julia package for corporate valuation: from the cost of capital to the
+A Julia package for corporate valuation: from the cost of capital to the
 equity value of a company.
 
 | Step | Functions |
