@@ -10,4 +10,5 @@ using Aqua
     include("cost_of_capital.jl")
     include("valuation.jl")
     include("inputs.jl")
+    include("reversibility.jl")
 end
