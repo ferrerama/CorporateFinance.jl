@@ -1,5 +1,10 @@
 using Test
 using CorporateFinance
+using Aqua
+
+@testset "Aqua" begin
+    Aqua.test_all(CorporateFinance)
+end
 
 @testset "CorporateFinance Tests" begin
     # CAPM valid
@@ -30,4 +35,33 @@ using CorporateFinance
 
     # Perpetuity invalid (rate <= 0)
     @test_throws ErrorException perpetuity(100.0, 0.0)
+
+    # Unlever / relever beta (Hamada)
+    bu = unlever_beta(beta=1.2, tax=0.30, E=600.0, D=400.0)
+    @test bu ≈ 1.2 / (1 + 0.70 * 400 / 600)
+    @test relever_beta(beta=bu, tax=0.30, E=600.0, D=400.0) ≈ 1.2
+    @test relever_beta(beta=bu, tax=0.30, E=600.0, D=0.0) ≈ bu
+
+    # Unlever beta invalid (equity must be positive)
+    @test_throws ErrorException unlever_beta(beta=1.2, tax=0.30, E=0.0, D=400.0)
+
+    # Terminal value (Gordon growth)
+    @test terminal_value(fcf=100.0, wacc=0.10, g=0.02) ≈ 100.0 * 1.02 / 0.08
+
+    # Terminal value invalid (wacc <= g)
+    @test_throws ErrorException terminal_value(fcf=100.0, wacc=0.02, g=0.02)
+
+    # DCF valuation: forecast + terminal value
+    fcf = [100.0, 110.0, 120.0]
+    r = dcf_valuation(fcf; wacc=0.10, g=0.02)
+    @test r.pv_fcf ≈ 100/1.1 + 110/1.1^2 + 120/1.1^3
+    @test r.pv_terminal ≈ (120 * 1.02 / 0.08) / 1.1^3
+    @test r.enterprise_value ≈ r.pv_fcf + r.pv_terminal
+
+    # DCF valuation invalid (empty cash flows)
+    @test_throws ErrorException dcf_valuation(Float64[]; wacc=0.10, g=0.02)
+
+    # Equity value
+    @test equity_value(ev=1000.0, debt=300.0, cash=50.0) ≈ 750.0
+    @test_throws ErrorException equity_value(ev=1000.0, debt=-1.0)
 end

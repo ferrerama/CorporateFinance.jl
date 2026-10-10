@@ -1,21 +1,29 @@
 # CorporateFinance.jl
 
+[![CI](https://github.com/ferrerama/CorporateFinance.jl/actions/workflows/CI.yml/badge.svg)](https://github.com/ferrerama/CorporateFinance.jl/actions/workflows/CI.yml)
+[![codecov](https://codecov.io/gh/ferrerama/CorporateFinance.jl/branch/main/graph/badge.svg)](https://codecov.io/gh/ferrerama/CorporateFinance.jl)
+[![Aqua QA](https://raw.githubusercontent.com/JuliaTesting/Aqua.jl/master/badge.svg)](https://github.com/JuliaTesting/Aqua.jl)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Julia](https://img.shields.io/badge/Julia-1.10%2B-9558B2?logo=julia)](https://julialang.org)
 
-A small Julia package for cost of capital calculations used in corporate valuation: CAPM, WACC, beta and perpetuity value.
+A small Julia package for corporate valuation: from the cost of capital to the equity value of a company.
 
 ## Scope of CorporateFinance.jl
 
-`CorporateFinance.jl` covers the inputs commonly used in corporate finance coursework and practice: the cost of equity, the cost of capital, beta and the value of a perpetuity.
+`CorporateFinance.jl` covers the main steps of a corporate valuation:
+
+| Step | Functions |
+|---|---|
+| Cost of capital | `capm`, `wacc`, `beta_regression`, `unlever_beta`, `relever_beta` |
+| Valuation | `perpetuity`, `terminal_value`, `dcf_valuation`, `equity_value` |
 
 ## Not covered by this package
 
-This package does not cover functions such as DCF, NPV, IRR or payback, because existing Julia packages already provide them:
+This package does not cover functions such as present value, NPV, IRR or payback, because existing Julia packages already provide them:
 
 | Function | Use | Package |
 |---|---|---|
-| DCF / present value | `pv(rate, cashflows)` | [FinanceCore.jl](https://github.com/JuliaActuary/FinanceCore.jl) |
+| Present value | `pv(rate, cashflows)` | [FinanceCore.jl](https://github.com/JuliaActuary/FinanceCore.jl) |
 | NPV | `pv(rate, cashflows)` | [FinanceCore.jl](https://github.com/JuliaActuary/FinanceCore.jl) |
 | IRR | `irr(cashflows)` | [FinanceCore.jl](https://github.com/JuliaActuary/FinanceCore.jl) |
 | Payback | `breakeven(rate, cashflows, times)` | [ActuaryUtilities.jl](https://github.com/JuliaActuary/ActuaryUtilities.jl) |
@@ -42,24 +50,23 @@ Pkg.add(url="https://github.com/ferrerama/CorporateFinance.jl")
 ```julia
 using CorporateFinance
 
+# --- Beta: unlever a comparable company, relever to the target structure ---
+bu = unlever_beta(beta = 1.3, tax = 0.30, E = 500_000, D = 500_000)
+bl = relever_beta(beta = bu, tax = 0.30, E = 800_000, D = 200_000)
+
 # --- Cost of equity (CAPM), including a country risk premium ---
-ke = capm(rf = 0.04, beta = 1.2, erp = 0.055, crp = 0.02)
+ke = capm(rf = 0.04, beta = bl, erp = 0.055, crp = 0.02)
 
 # --- Weighted Average Cost of Capital ---
 w = wacc(ke = ke, kd = 0.06, tax = 0.30, E = 800_000, D = 200_000)
 
-# --- Beta from asset and market returns ---
-b = beta_regression([0.05, 0.02, -0.01, 0.04], [0.04, 0.01, 0.00, 0.03])
+# --- DCF: forecast free cash flows + terminal value (2% growth) ---
+fcf = [120_000, 135_000, 150_000, 160_000, 170_000]
+r = dcf_valuation(fcf; wacc = w, g = 0.02)
+r.enterprise_value
 
-# --- Value a perpetual cash flow ---
-value = perpetuity(50_000, 0.08)
-```
-
-To discount cash flows with the WACC, use FinanceCore.jl:
-
-```julia
-using FinanceCore
-value = pv(w, [120_000, 135_000, 150_000, 160_000, 500_000])
+# --- Equity value ---
+equity = equity_value(ev = r.enterprise_value, debt = 200_000, cash = 30_000)
 ```
 
 ## Running the tests
