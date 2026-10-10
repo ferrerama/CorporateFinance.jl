@@ -4,11 +4,16 @@
 """
     perpetuity(cashflow::Real, rate::Real)
 
-Calculates the present value of a constant perpetuity given a cash flow and a discount rate.
+Calculates the present value of a constant perpetuity: `cashflow / rate`.
+
+# Arguments
+- `cashflow`: Constant cash flow received each period.
+- `rate`: Discount rate. Must be positive.
 """
 function perpetuity(cashflow::Real, rate::Real)
+    check_finite(cashflow = cashflow, rate = rate)
     if rate <= 0
-        error("Discount rate must be positive.")
+        throw(ArgumentError("Discount rate must be positive."))
     end
     return cashflow / rate
 end
@@ -28,8 +33,9 @@ Gordon growth model: `fcf * (1 + g) / (wacc - g)`.
 - `g`: Long-term growth rate.
 """
 function terminal_value(; fcf::Real, wacc::Real, g::Real)
+    check_finite(fcf = fcf, wacc = wacc, g = g)
     if wacc <= g
-        error("WACC must be greater than the growth rate g.")
+        throw(ArgumentError("WACC must be greater than the growth rate g."))
     end
     return fcf * (1 + g) / (wacc - g)
 end
@@ -38,23 +44,26 @@ end
 # DCF Valuation: Forecast + Terminal Value
 # -----------------------------
 """
-    dcf_valuation(fcf::Vector{<:Real}; wacc::Real, g::Real)
+    dcf_valuation(fcf::AbstractVector{<:Real}; wacc::Real, g::Real)
 
 Values a company with a discounted cash flow model in two stages: the forecast
 free cash flows and a terminal value (Gordon growth) after the last year.
 
 Returns a named tuple with `pv_fcf`, `pv_terminal` and `enterprise_value`.
 
+# Arguments
+- `fcf`: Forecast free cash flows, one per year (year 1 to n).
+
 # Keyword Arguments
 - `wacc`: Discount rate. Must be greater than `g`.
 - `g`: Long-term growth rate after the forecast period.
 """
-function dcf_valuation(fcf::Vector{<:Real}; wacc::Real, g::Real)
+function dcf_valuation(fcf::AbstractVector{<:Real}; wacc::Real, g::Real)
     if isempty(fcf)
-        error("The cash flow vector cannot be empty.")
+        throw(ArgumentError("The cash flow vector cannot be empty."))
     end
     if any(.!isfinite.(fcf))
-        error("The cash flow vector contains invalid or non-finite values.")
+        throw(ArgumentError("The cash flow vector contains invalid or non-finite values."))
     end
 
     n = length(fcf)
@@ -81,8 +90,9 @@ Calculates the equity value from the enterprise value: `ev - debt + cash`.
 - `cash`: Cash and equivalents. Cannot be negative.
 """
 function equity_value(; ev::Real, debt::Real, cash::Real = 0)
+    check_finite(ev = ev, debt = debt, cash = cash)
     if debt < 0 || cash < 0
-        error("Debt and cash cannot be negative.")
+        throw(ArgumentError("Debt and cash cannot be negative."))
     end
     return ev - debt + cash
 end
