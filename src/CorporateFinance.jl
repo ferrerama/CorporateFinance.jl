@@ -2,8 +2,12 @@ module CorporateFinance
 
 using LinearAlgebra, Statistics
 
-export capm, wacc, dcf_value, beta_regression,
-       npv, irr, payback, perpetuity
+export capm, wacc, beta_regression, perpetuity
+
+# NOTE (2026-10): Removed per JuliaRegistries/General PR #167798 review:
+# `dcf_value`, `npv`, `irr` and `payback` duplicate functionality already
+# available in FinanceCore.jl / ActuaryUtilities.jl. See commented blocks below.
+# export dcf_value, npv, irr, payback
 
 # -----------------------------
 # CAPM: Cost of Equity
@@ -65,6 +69,16 @@ function wacc(; ke::Real, kd::Real, tax::Real, E::Real, D::Real)
     return (E / (E + D)) * ke + (D / (E + D)) * kd * (1 - tax)
 end
 
+# =============================================================================
+# REMOVED: dcf_value
+# Already available in FinanceCore.jl:
+#     using FinanceCore
+#     pv(wacc, fcf)              # alias of present_value(wacc, fcf)
+# Ref: JuliaRegistries/General PR #167798 (alecloudenback, mvanzulli).
+# Pending: a multi-stage DCF with terminal value is NOT covered by existing
+# packages (suggested by mvanzulli) and is the planned replacement.
+# =============================================================================
+#=
 # -----------------------------
 # DCF: Discounted Cash Flow
 # -----------------------------
@@ -84,6 +98,7 @@ function dcf_value(fcf::Vector{T}, wacc::Real) where T<:Real
     t = 1:length(fcf)
     return sum(fcf ./ (1 .+ wacc) .^ t)
 end
+=#
 
 # -----------------------------
 # Beta Regression
@@ -102,6 +117,16 @@ function beta_regression(asset_returns::Vector{<:Real}, market_returns::Vector{<
     return cov_am / var_m
 end
 
+# =============================================================================
+# REMOVED: npv
+# Already available in FinanceCore.jl:
+#     using FinanceCore
+#     -initial_investment + pv(rate, cashflows)
+#     # or include the investment at t=0:
+#     pv(rate, [-initial_investment; cashflows], 0:length(cashflows))
+# Ref: JuliaRegistries/General PR #167798 (goerz, alecloudenback, mvanzulli).
+# =============================================================================
+#=
 # -----------------------------
 # NPV: Net Present Value
 # -----------------------------
@@ -114,7 +139,16 @@ function npv(cashflows::Vector{<:Real}, rate::Real; initial_investment::Real=0.0
     t = 1:length(cashflows)
     return -initial_investment + sum(cashflows ./ (1 .+ rate) .^ t)
 end
+=#
 
+# =============================================================================
+# REMOVED: irr
+# Already available in FinanceCore.jl:
+#     using FinanceCore
+#     irr([-initial_investment; cashflows])   # alias of internal_rate_of_return
+# Ref: JuliaRegistries/General PR #167798 (goerz, alecloudenback, mvanzulli).
+# =============================================================================
+#=
 # -----------------------------
 # IRR: Internal Rate of Return
 # -----------------------------
@@ -137,7 +171,17 @@ function irr(cashflows::Vector{<:Real}; initial_investment::Real=0.0)
     end
     error("IRR did not converge")
 end
+=#
 
+# =============================================================================
+# REMOVED: payback
+# Already available in ActuaryUtilities.jl:
+#     using ActuaryUtilities
+#     breakeven(0.0, [-initial_investment; cashflows], 0:length(cashflows))
+#     # returns `nothing` if never recovered (this version returned Inf)
+# Ref: JuliaRegistries/General PR #167798 (goerz, alecloudenback).
+# =============================================================================
+#=
 # -----------------------------
 # Payback Period
 # -----------------------------
@@ -151,6 +195,7 @@ function payback(cashflows::Vector{<:Real}, initial_investment::Real)
     idx = findfirst(>=(initial_investment), cumulative)
     return isnothing(idx) ? Inf : idx
 end
+=#
 
 # -----------------------------
 # Perpetuity

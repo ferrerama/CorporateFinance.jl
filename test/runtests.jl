@@ -16,6 +16,8 @@ using CorporateFinance
     # WACC invalid (tax out of range)
     @test_throws ErrorException wacc(ke=0.1, kd=0.05, tax=1.5, E=100, D=200)
 
+    # REMOVED: dcf_value (use FinanceCore.pv) — see JuliaRegistries/General PR #167798
+    #=
     # DCF valid
     fcf = [150000.0, 180000.0, 210000.0, 240000.0, 300000.0]
     wacc_val = wacc(ke=ke, kd=0.070, tax=0.30, E=600_000.0, D=400_000.0)
@@ -23,6 +25,7 @@ using CorporateFinance
 
     # DCF invalid (wacc <= -1)
     @test_throws ErrorException dcf_value([100.0, 200.0], -1.0)
+    =#
 
     # Beta Regression valid
     asset_returns  = [0.05, 0.02, -0.01, 0.04, 0.03]
@@ -33,6 +36,9 @@ using CorporateFinance
     # Beta Regression invalid (different lengths)
     @test_throws ErrorException beta_regression([0.05, 0.02], [0.04])
 
+    # REMOVED: npv, irr (use FinanceCore.pv / FinanceCore.irr) and
+    # payback (use ActuaryUtilities.breakeven) — see JuliaRegistries/General PR #167798
+    #=
     # NPV valid
     cf = [100.0, 200.0, 300.0]
     @test npv(cf, 0.1; initial_investment=400.0) ≈ -400.0 + sum(cf ./ (1.1) .^ (1:3))
@@ -48,6 +54,7 @@ using CorporateFinance
 
     # Payback no recovery
     @test payback([100.0, 100.0], 500.0) == Inf
+    =#
 
     # Perpetuity valid
     @test perpetuity(100.0, 0.05) ≈ 2000.0
