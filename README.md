@@ -20,14 +20,9 @@ A small Julia package for corporate valuation: from the cost of capital to the e
 
 ## Not covered by this package
 
-This package does not cover functions such as present value, NPV, IRR or payback, because existing Julia packages already provide them:
+Present value, NPV and IRR are provided by [FinanceCore.jl](https://github.com/JuliaActuary/FinanceCore.jl) (`pv`, `irr`).
 
-| Function | Use | Package |
-|---|---|---|
-| Present value | `pv(rate, cashflows)` | [FinanceCore.jl](https://github.com/JuliaActuary/FinanceCore.jl) |
-| NPV | `pv(rate, cashflows)` | [FinanceCore.jl](https://github.com/JuliaActuary/FinanceCore.jl) |
-| IRR | `irr(cashflows)` | [FinanceCore.jl](https://github.com/JuliaActuary/FinanceCore.jl) |
-| Payback | `breakeven(rate, cashflows, times)` | [ActuaryUtilities.jl](https://github.com/JuliaActuary/ActuaryUtilities.jl) |
+Payback is provided by [ActuaryUtilities.jl](https://github.com/JuliaActuary/ActuaryUtilities.jl) (`breakeven`).
 
 This package does not attempt to model market microstructure, portfolio optimization, or derivatives pricing — for that, see packages like [FinanceModels.jl](https://github.com/JuliaActuary/FinanceModels.jl) or [InterestRates.jl](https://github.com/felipenoris/InterestRates.jl).
 
