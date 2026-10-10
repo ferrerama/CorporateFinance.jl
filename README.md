@@ -9,18 +9,16 @@ A small Julia package for cost of capital calculations used in corporate valuati
 
 `CorporateFinance.jl` covers the inputs commonly used in corporate finance coursework and practice: the cost of equity, the cost of capital, beta and the value of a perpetuity.
 
-## Removed functions and where to find them
+## Not covered by this package
 
-Earlier versions of this package included `dcf_value`, `npv`, `irr` and `payback`. They were removed because well-maintained Julia packages already provide them, and there is no reason to duplicate that work:
+This package does not cover functions such as DCF, NPV, IRR or payback, because existing Julia packages already provide them:
 
-| Removed function | Use instead | Package |
+| Function | Use | Package |
 |---|---|---|
-| `dcf_value` | `pv(rate, cashflows)` | [FinanceCore.jl](https://github.com/JuliaActuary/FinanceCore.jl) |
-| `npv` | `pv(rate, cashflows)` | [FinanceCore.jl](https://github.com/JuliaActuary/FinanceCore.jl) |
-| `irr` | `irr(cashflows)` | [FinanceCore.jl](https://github.com/JuliaActuary/FinanceCore.jl) |
-| `payback` | `breakeven(rate, cashflows, times)` | [ActuaryUtilities.jl](https://github.com/JuliaActuary/ActuaryUtilities.jl) |
-
-This change follows the review in the [General registry](https://github.com/JuliaRegistries/General/pull/167798).
+| DCF / present value | `pv(rate, cashflows)` | [FinanceCore.jl](https://github.com/JuliaActuary/FinanceCore.jl) |
+| NPV | `pv(rate, cashflows)` | [FinanceCore.jl](https://github.com/JuliaActuary/FinanceCore.jl) |
+| IRR | `irr(cashflows)` | [FinanceCore.jl](https://github.com/JuliaActuary/FinanceCore.jl) |
+| Payback | `breakeven(rate, cashflows, times)` | [ActuaryUtilities.jl](https://github.com/JuliaActuary/ActuaryUtilities.jl) |
 
 This package does not attempt to model market microstructure, portfolio optimization, or derivatives pricing — for that, see packages like [FinanceModels.jl](https://github.com/JuliaActuary/FinanceModels.jl) or [InterestRates.jl](https://github.com/felipenoris/InterestRates.jl).
 
