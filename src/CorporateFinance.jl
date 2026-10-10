@@ -4,11 +4,6 @@ using LinearAlgebra, Statistics
 
 export capm, wacc, beta_regression, perpetuity
 
-# NOTE (2026-10): Removed per JuliaRegistries/General PR #167798 review:
-# `dcf_value`, `npv`, `irr` and `payback` duplicate functionality already
-# available in FinanceCore.jl / ActuaryUtilities.jl. See commented blocks below.
-# export dcf_value, npv, irr, payback
-
 # -----------------------------
 # CAPM: Cost of Equity
 # -----------------------------
@@ -69,37 +64,6 @@ function wacc(; ke::Real, kd::Real, tax::Real, E::Real, D::Real)
     return (E / (E + D)) * ke + (D / (E + D)) * kd * (1 - tax)
 end
 
-# =============================================================================
-# REMOVED: dcf_value
-# Already available in FinanceCore.jl:
-#     using FinanceCore
-#     pv(wacc, fcf)              # alias of present_value(wacc, fcf)
-# Ref: JuliaRegistries/General PR #167798 (alecloudenback, mvanzulli).
-# Pending: a multi-stage DCF with terminal value is NOT covered by existing
-# packages (suggested by mvanzulli) and is the planned replacement.
-# =============================================================================
-#=
-# -----------------------------
-# DCF: Discounted Cash Flow
-# -----------------------------
-"""
-    dcf_value(fcf::Vector{T}, wacc::Real) where T<:Real
-
-Calculates the present value of a series of Free Cash Flows (FCF) discounted at the WACC rate.
-"""
-function dcf_value(fcf::Vector{T}, wacc::Real) where T<:Real
-    if any(.!isfinite.(fcf))
-        error("The cash flow vector contains invalid or non-finite values.")
-    end
-    if wacc <= -1
-        error("WACC must be strictly greater than -1.")
-    end
-
-    t = 1:length(fcf)
-    return sum(fcf ./ (1 .+ wacc) .^ t)
-end
-=#
-
 # -----------------------------
 # Beta Regression
 # -----------------------------
@@ -116,86 +80,6 @@ function beta_regression(asset_returns::Vector{<:Real}, market_returns::Vector{<
     var_m  = var(market_returns)
     return cov_am / var_m
 end
-
-# =============================================================================
-# REMOVED: npv
-# Already available in FinanceCore.jl:
-#     using FinanceCore
-#     -initial_investment + pv(rate, cashflows)
-#     # or include the investment at t=0:
-#     pv(rate, [-initial_investment; cashflows], 0:length(cashflows))
-# Ref: JuliaRegistries/General PR #167798 (goerz, alecloudenback, mvanzulli).
-# =============================================================================
-#=
-# -----------------------------
-# NPV: Net Present Value
-# -----------------------------
-"""
-    npv(cashflows::Vector{<:Real}, rate::Real; initial_investment::Real=0.0)
-
-Calculates the Net Present Value (NPV) of an investment project.
-"""
-function npv(cashflows::Vector{<:Real}, rate::Real; initial_investment::Real=0.0)
-    t = 1:length(cashflows)
-    return -initial_investment + sum(cashflows ./ (1 .+ rate) .^ t)
-end
-=#
-
-# =============================================================================
-# REMOVED: irr
-# Already available in FinanceCore.jl:
-#     using FinanceCore
-#     irr([-initial_investment; cashflows])   # alias of internal_rate_of_return
-# Ref: JuliaRegistries/General PR #167798 (goerz, alecloudenback, mvanzulli).
-# =============================================================================
-#=
-# -----------------------------
-# IRR: Internal Rate of Return
-# -----------------------------
-"""
-    irr(cashflows::Vector{<:Real}; initial_investment::Real=0.0)
-
-Calculates the Internal Rate of Return (IRR) using the Newton-Raphson numerical method.
-"""
-function irr(cashflows::Vector{<:Real}; initial_investment::Real=0.0)
-    f(rate) = npv(cashflows, rate; initial_investment=initial_investment)
-    # Simple Newton-Raphson iteration
-    rate = 0.1
-    for _ in 1:100
-        f_val = f(rate)
-        f_der = sum((-t * cashflows[t]) / (1 + rate)^(t + 1) for t in 1:length(cashflows))
-        rate -= f_val / f_der
-        if abs(f_val) < 1e-6
-            return rate
-        end
-    end
-    error("IRR did not converge")
-end
-=#
-
-# =============================================================================
-# REMOVED: payback
-# Already available in ActuaryUtilities.jl:
-#     using ActuaryUtilities
-#     breakeven(0.0, [-initial_investment; cashflows], 0:length(cashflows))
-#     # returns `nothing` if never recovered (this version returned Inf)
-# Ref: JuliaRegistries/General PR #167798 (goerz, alecloudenback).
-# =============================================================================
-#=
-# -----------------------------
-# Payback Period
-# -----------------------------
-"""
-    payback(cashflows::Vector{<:Real}, initial_investment::Real)
-
-Calculates the simple payback period. Returns `Inf` if the initial investment is not fully recovered within the timeline.
-"""
-function payback(cashflows::Vector{<:Real}, initial_investment::Real)
-    cumulative = cumsum(cashflows)
-    idx = findfirst(>=(initial_investment), cumulative)
-    return isnothing(idx) ? Inf : idx
-end
-=#
 
 # -----------------------------
 # Perpetuity
