@@ -6,7 +6,7 @@ equity value of a company.
 | Step | Functions |
 |---|---|
 | [Cost of capital](@ref) | [`capm`](@ref), [`wacc`](@ref), [`beta_regression`](@ref), [`unlever_beta`](@ref), [`relever_beta`](@ref) |
-| [Valuation](@ref) | [`perpetuity`](@ref), [`terminal_value`](@ref), [`dcf_valuation`](@ref), [`equity_value`](@ref) |
+| [Valuation](@ref) | [`perpetuity`](@ref), [`terminal_value`](@ref), [`fade_forecast`](@ref), [`dcf_valuation`](@ref), [`dcf_sensitivity`](@ref), [`equity_value`](@ref) |
 
 ## Installation
 
@@ -42,6 +42,11 @@ w = wacc(ke = ke, kd = 0.06, tax = 0.30, E = 800_000, D = 200_000)
 # DCF: forecast free cash flows + terminal value with 2% growth
 fcf = [120_000, 135_000, 150_000, 160_000, 170_000]
 r = dcf_valuation(fcf; wacc = w, g = 0.02)
+```
+
+```@example walkthrough
+# Sensitivity table: WACC (rows) × g (columns)
+dcf_sensitivity(fcf; waccs = [0.09, 0.10, 0.11], gs = [0.015, 0.02, 0.025])
 ```
 
 ```@example walkthrough

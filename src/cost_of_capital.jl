@@ -7,16 +7,13 @@
 Calculates the Cost of Equity using the Capital Asset Pricing Model (CAPM).
 
 # Keyword Arguments
-- `rf`: Risk-free rate. Cannot be negative.
+- `rf`: Risk-free rate. Can be negative.
 - `beta`: Systematic risk measure. Must be between -5 and 5.
 - `erp`: Equity Risk Premium. Cannot be negative.
 - `crp`: Country Risk Premium. Cannot be negative.
 """
 function capm(; rf::Real, beta::Real, erp::Real, crp::Real)
     check_finite(rf = rf, beta = beta, erp = erp, crp = crp)
-    if rf < 0
-        throw(ArgumentError("rf (risk-free rate) cannot be negative."))
-    end
     if beta < -5 || beta > 5
         throw(ArgumentError("beta is outside a reasonable financial range (-5 to 5)."))
     end
@@ -92,7 +89,7 @@ function beta_regression(asset_returns::AbstractVector{<:Real}, market_returns::
 end
 
 # -----------------------------
-# Unlevered and Relevered Beta (Hamada)
+# Unlevered and Relevered Beta (Hamada / Conine)
 # -----------------------------
 """
     check_leverage(tax::Real, E::Real, D::Real)
@@ -117,37 +114,46 @@ function check_leverage(tax::Real, E::Real, D::Real)
 end
 
 """
-    unlever_beta(; beta::Real, tax::Real, E::Real, D::Real)
+    unlever_beta(; beta::Real, tax::Real, E::Real, D::Real, beta_debt::Real = 0)
 
-Removes the effect of debt from a levered beta using the Hamada equation:
-`beta / (1 + (1 - tax) * D / E)`.
+Removes the effect of debt from a levered beta:
+`(beta + beta_debt * k) / (1 + k)`, with `k = (1 - tax) * D / E`.
+
+With `beta_debt = 0` this is the Hamada equation. A positive `beta_debt`
+(Conine formula) is more realistic for highly leveraged companies, whose debt
+carries part of the business risk.
 
 # Keyword Arguments
 - `beta`: Levered (observed) beta.
 - `tax`: Corporate tax rate, between 0 and 1.
 - `E`: Market value of equity.
 - `D`: Market value of debt.
+- `beta_debt`: Beta of the debt. Defaults to 0 (risk-free debt).
 """
-function unlever_beta(; beta::Real, tax::Real, E::Real, D::Real)
-    check_finite(beta = beta, tax = tax, E = E, D = D)
+function unlever_beta(; beta::Real, tax::Real, E::Real, D::Real, beta_debt::Real = 0)
+    check_finite(beta = beta, tax = tax, E = E, D = D, beta_debt = beta_debt)
     check_leverage(tax, E, D)
-    return beta / (1 + (1 - tax) * D / E)
+    k = (1 - tax) * D / E
+    return (beta + beta_debt * k) / (1 + k)
 end
 
 """
-    relever_beta(; beta::Real, tax::Real, E::Real, D::Real)
+    relever_beta(; beta::Real, tax::Real, E::Real, D::Real, beta_debt::Real = 0)
 
-Applies a target capital structure to an unlevered beta using the Hamada equation:
-`beta * (1 + (1 - tax) * D / E)`.
+Applies a target capital structure to an unlevered beta:
+`beta + (beta - beta_debt) * k`, with `k = (1 - tax) * D / E`.
+It is the inverse of [`unlever_beta`](@ref).
 
 # Keyword Arguments
 - `beta`: Unlevered beta.
 - `tax`: Corporate tax rate, between 0 and 1.
 - `E`: Target value of equity.
 - `D`: Target value of debt.
+- `beta_debt`: Beta of the debt. Defaults to 0 (risk-free debt).
 """
-function relever_beta(; beta::Real, tax::Real, E::Real, D::Real)
-    check_finite(beta = beta, tax = tax, E = E, D = D)
+function relever_beta(; beta::Real, tax::Real, E::Real, D::Real, beta_debt::Real = 0)
+    check_finite(beta = beta, tax = tax, E = E, D = D, beta_debt = beta_debt)
     check_leverage(tax, E, D)
-    return beta * (1 + (1 - tax) * D / E)
+    k = (1 - tax) * D / E
+    return beta + (beta - beta_debt) * k
 end

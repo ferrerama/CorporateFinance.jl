@@ -20,8 +20,10 @@
         # Integer inputs
         @test capm(rf=0, beta=1, erp=0, crp=0) == 0
 
+        # Negative risk-free rate is accepted
+        @test capm(rf=-0.005, beta=1.0, erp=0.05, crp=0.0) ≈ 0.045
+
         # Invalid inputs
-        @test_throws ArgumentError capm(rf=-0.01, beta=1.0, erp=0.05, crp=0.02)
         @test_throws ArgumentError capm(rf=0.04, beta=5.1, erp=0.05, crp=0.02)
         @test_throws ArgumentError capm(rf=0.04, beta=-5.1, erp=0.05, crp=0.02)
         @test_throws ArgumentError capm(rf=0.04, beta=1.0, erp=-0.05, crp=0.02)
@@ -98,7 +100,7 @@
     end
 
     # -----------------------------
-    # Unlevered and Relevered Beta (Hamada)
+    # Unlevered and Relevered Beta (Hamada / Conine)
     # -----------------------------
     @testset "unlever_beta / relever_beta" begin
         # Hand-calculated value: 1.3 / (1 + 0.7 * 1)
@@ -121,6 +123,20 @@
         # More debt means a higher levered beta
         @test relever_beta(beta=0.8, tax=0.30, E=500.0, D=500.0) >
               relever_beta(beta=0.8, tax=0.30, E=800.0, D=200.0)
+
+        # Debt beta (Conine): hand-calculated with k = 0.7 * 400 / 600
+        k = 0.7 * 400 / 600
+        @test unlever_beta(beta=1.2, tax=0.30, E=600.0, D=400.0, beta_debt=0.3) ≈
+              (1.2 + 0.3 * k) / (1 + k)
+        @test relever_beta(beta=0.9, tax=0.30, E=600.0, D=400.0, beta_debt=0.3) ≈
+              0.9 + 0.6 * k
+
+        # A risky debt absorbs part of the risk: higher unlevered beta than Hamada
+        @test unlever_beta(beta=1.2, tax=0.30, E=600.0, D=400.0, beta_debt=0.3) > bu
+
+        # Round trip also holds with a debt beta
+        bu_d = unlever_beta(beta=1.2, tax=0.30, E=600.0, D=400.0, beta_debt=0.3)
+        @test relever_beta(beta=bu_d, tax=0.30, E=600.0, D=400.0, beta_debt=0.3) ≈ 1.2
 
         # Invalid inputs (both functions share the same validation)
         for f in (unlever_beta, relever_beta)

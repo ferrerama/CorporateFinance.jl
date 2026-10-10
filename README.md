@@ -16,7 +16,7 @@ A Julia package for corporate valuation: from the cost of capital to the equity 
 | Step | Functions |
 |---|---|
 | Cost of capital | `capm`, `wacc`, `beta_regression`, `unlever_beta`, `relever_beta` |
-| Valuation | `perpetuity`, `terminal_value`, `dcf_valuation`, `equity_value` |
+| Valuation | `perpetuity`, `terminal_value`, `fade_forecast`, `dcf_valuation`, `dcf_sensitivity`, `equity_value` |
 
 ## Not covered by this package
 
@@ -60,6 +60,9 @@ w = wacc(ke = ke, kd = 0.06, tax = 0.30, E = 800_000, D = 200_000)
 fcf = [120_000, 135_000, 150_000, 160_000, 170_000]
 r = dcf_valuation(fcf; wacc = w, g = 0.02)
 r.enterprise_value
+
+# --- Sensitivity table: WACC (rows) × g (columns) ---
+dcf_sensitivity(fcf; waccs = [0.09, 0.10, 0.11], gs = [0.015, 0.02, 0.025])
 
 # --- Equity value ---
 equity = equity_value(ev = r.enterprise_value, debt = 200_000, cash = 30_000)
