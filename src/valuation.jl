@@ -162,12 +162,18 @@ Combinations where `wacc <= g` have no valid Gordon value and are returned as
 - `fcf`: Forecast free cash flows, one per year (year 1 to n).
 
 # Keyword Arguments
-- `waccs`: Discount rates, one per row.
-- `gs`: Long-term growth rates, one per column.
+- `waccs`: Discount rates, one per row, in the same order.
+- `gs`: Long-term growth rates, one per column, in the same order.
 - `midyear`: Use the mid-year discounting convention. Defaults to `false`.
 """
 function dcf_sensitivity(fcf::AbstractVector{<:Real}; waccs::AbstractVector{<:Real},
                          gs::AbstractVector{<:Real}, midyear::Bool = false)
+    if isempty(fcf)
+        throw(ArgumentError("The cash flow vector cannot be empty."))
+    end
+    if any(.!isfinite.(fcf))
+        throw(ArgumentError("The cash flow vector contains invalid or non-finite values."))
+    end
     if any(.!isfinite.(waccs)) || any(.!isfinite.(gs))
         throw(ArgumentError("waccs and gs must contain finite numbers."))
     end

@@ -186,6 +186,10 @@
         # Float32 in, Float32 out
         @test dcf_sensitivity(Float32[100, 110]; waccs=[0.1f0], gs=[0.02f0]) isa Matrix{Float32}
 
+        # Cash flows are validated even if no cell is valid
+        @test_throws ArgumentError dcf_sensitivity(Float64[]; waccs=[0.02], gs=[0.03])
+        @test_throws ArgumentError dcf_sensitivity([100.0, NaN]; waccs=[0.02], gs=[0.03])
+
         @test_throws ArgumentError dcf_sensitivity(fcf; waccs=[NaN], gs=gs)
         @test_throws ArgumentError dcf_sensitivity(fcf; waccs=waccs, gs=[Inf])
     end

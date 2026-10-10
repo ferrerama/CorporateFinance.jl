@@ -61,7 +61,7 @@ fcf = [120_000, 135_000, 150_000, 160_000, 170_000]
 r = dcf_valuation(fcf; wacc = w, g = 0.02)
 r.enterprise_value
 
-# --- Sensitivity table: WACC (rows) × g (columns) ---
+# --- Sensitivity table: rows follow waccs, columns follow gs ---
 dcf_sensitivity(fcf; waccs = [0.09, 0.10, 0.11], gs = [0.015, 0.02, 0.025])
 
 # --- Equity value ---

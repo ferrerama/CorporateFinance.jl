@@ -1,6 +1,6 @@
 module CorporateFinance
 
-using LinearAlgebra, Statistics
+using Statistics
 
 export capm, wacc, beta_regression, unlever_beta, relever_beta,
        perpetuity, terminal_value, fade_forecast, dcf_valuation, dcf_sensitivity,
