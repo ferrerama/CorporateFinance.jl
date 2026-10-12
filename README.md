@@ -28,18 +28,16 @@ This package does not attempt to model market microstructure, portfolio optimiza
 
 ## Installation
 
-Once registered in the General registry, install it from the Julia REPL by entering package mode (press `]`):
-
-```julia
-pkg> add CorporateFinance
-```
-
-Alternatively, before registration completes (or to track the latest development version), install it directly from GitHub:
+CorporateFinance.jl is installed from GitHub. To use the latest release:
 
 ```julia
 using Pkg
-Pkg.add(url="https://github.com/ferrerama/CorporateFinance.jl")
+Pkg.add(url = "https://github.com/ferrerama/CorporateFinance.jl", rev = "v0.1.0")
 ```
+
+Without `rev`, it follows the development version on `main`.
+Releases and their changes are listed in [CHANGELOG.md](CHANGELOG.md).
+Registration in the General registry is planned for a later release.
 
 ## Quick example
 
