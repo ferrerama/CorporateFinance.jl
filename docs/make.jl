@@ -6,7 +6,7 @@ makedocs(;
     sitename = "CorporateFinance.jl",
     authors = "Miguel Ferrera",
     format = Documenter.HTML(;
-        canonical = "https://ferrerama.github.io/CorporateFinance.jl",
+        canonical = "https://ferrerama.github.io/CorporateFinance.jl/stable/",
         prettyurls = get(ENV, "CI", "false") == "true",
     ),
     checkdocs = :exports,
