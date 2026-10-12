@@ -68,9 +68,10 @@ dcf_sensitivity(fcf; waccs = [0.09, 0.10, 0.11], gs = [0.015, 0.02, 0.025])
 equity = equity_value(ev = r.enterprise_value, debt = 200_000, cash = 30_000)
 ```
 
-## Example report
+## Application: a valuation report in LaTeX
 
-The same valuation as a LaTeX report, where the code runs when the document is compiled, is in the [juliatex example](https://github.com/ferrerama/juliaTex/tree/main/example): cost of capital, DCF, valuation bridge and sensitivity table, with the resulting [PDF](https://github.com/ferrerama/juliaTex/blob/main/example/analysis.pdf) and a [Markdown version](https://github.com/ferrerama/juliaTex/blob/main/example/analysis.md).
+An application of CorporateFinance.jl combined with LaTeX through [juliatex](https://github.com/ferrerama/juliaTex): the valuation above written as a [LaTeX report](https://github.com/ferrerama/juliaTex/tree/main/example) whose code runs when the document is compiled.
+It covers the cost of capital, the DCF, a valuation bridge and a sensitivity table; see the resulting [PDF](https://github.com/ferrerama/juliaTex/blob/main/example/analysis.pdf) or its [Markdown version](https://github.com/ferrerama/juliaTex/blob/main/example/analysis.md).
 
 ## Running the tests
 
